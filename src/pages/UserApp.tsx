@@ -15,6 +15,7 @@ import LoansScreen from '@/components/user/LoansScreen';
 import AccountsScreen from '@/components/user/AccountsScreen';
 import BillsScreen from '@/components/user/BillsScreen';
 import ScheduledScreen from '@/components/user/ScheduledScreen';
+import SupportButton from '@/components/user/SupportButton';
 
 // 4-button bottom navigation: Home, Transfer, Accounts, Cards
 // Chat and Settings are moved to Profile page
@@ -38,9 +39,9 @@ export default function UserApp() {
     <div className="min-h-screen bg-[#F7F9F4] relative overflow-hidden">
       {/* Background gradient */}
       <div className="fixed inset-0 gradient-blob-green pointer-events-none" />
-      
-      {/* Content */}
-      <div className="relative z-10 max-w-lg mx-auto pb-24">
+
+      {/* Content - with safe area padding for bottom nav */}
+      <div className="relative z-10 max-w-lg mx-auto pb-28 sm:pb-24" style={{ paddingBottom: 'max(7rem, env(safe-area-inset-bottom) + 5rem)' }}>
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<HomeScreen />} />
@@ -59,9 +60,12 @@ export default function UserApp() {
         </AnimatePresence>
       </div>
 
+      {/* Floating Support Button */}
+      {!isDetailPage && <SupportButton />}
+
       {/* Bottom Navigation */}
       {!isDetailPage && (
-        <div className="fixed bottom-0 left-0 right-0 z-50">
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <div className="max-w-lg mx-auto px-4 pb-4 pt-2">
             <div className="glass-surface-strong rounded-2xl px-4 py-3 flex items-center justify-around">
               {navItems.map((item) => {
@@ -74,13 +78,14 @@ export default function UserApp() {
                     whileTap={{ scale: 0.9 }}
                     onClick={() => navigate(`/app/${item.path}`)}
                     className={cn(
-                      'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200',
+                      'flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-[48px] min-h-[48px]',
                       isActive
                         ? 'bg-[#0A0A0A] text-white'
                         : 'text-[#0A0A0A]/40 hover:text-[#0A0A0A]/70'
                     )}
+                    aria-label={item.label}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-5 h-5" aria-hidden="true" />
                     <span className="text-[10px] font-medium">{item.label}</span>
                   </motion.button>
                 );

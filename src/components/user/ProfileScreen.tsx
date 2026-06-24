@@ -6,7 +6,7 @@ import {
   User, Shield, Smartphone, Fingerprint, Moon, Sun,
   Bell, ChevronRight, LogOut, CreditCard, MapPin, Calendar,
   Wallet, Receipt, Clock, TrendingUp, HelpCircle, MessageCircle,
-  Bitcoin, BarChart3, Settings
+  Bitcoin, Settings
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

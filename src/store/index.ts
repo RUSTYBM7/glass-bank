@@ -3,7 +3,8 @@ import type {
   User, AdminUser, Transaction, ChatRoom, ChatMessage,
   AdminAction, KycDocument, Notification, CurrencyRate, AppConfig,
   AccountStatus, BankAccount, Card, Loan, LoanPayment,
-  OnboardingData, ScheduledTransfer, BillPayment, OnboardingStep
+  OnboardingData, ScheduledTransfer, BillPayment, OnboardingStep,
+  SupportTicket, TicketMessage, AIConversation, AIMessage, ReceiptData
 } from '@/types';
 
 interface AppState {
@@ -37,6 +38,13 @@ interface AppState {
   selectedUserId: string | null;
   darkMode: boolean;
   isLoading: boolean;
+
+  // Support State
+  supportTickets: SupportTicket[];
+  aiConversations: AIConversation[];
+  currentAIConversation: string | null;
+  isAIThinking: boolean;
+  isHumanHandoff: boolean;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -111,6 +119,25 @@ interface AppState {
   // Bill Payment Actions
   setBillPayments: (payments: BillPayment[]) => void;
   addBillPayment: (payment: BillPayment) => void;
+
+  // Support Ticket Actions
+  setSupportTickets: (tickets: SupportTicket[]) => void;
+  addSupportTicket: (ticket: SupportTicket) => void;
+  updateTicketStatus: (ticketId: string, status: SupportTicket['status']) => void;
+  addTicketMessage: (ticketId: string, message: TicketMessage) => void;
+  assignTicket: (ticketId: string, agentId: string) => void;
+
+  // AI Conversation Actions
+  setAIConversations: (conversations: AIConversation[]) => void;
+  startAIConversation: (userId: string) => string;
+  addAIMessage: (conversationId: string, message: AIMessage) => void;
+  setCurrentAIConversation: (conversationId: string | null) => void;
+  setAIThinking: (thinking: boolean) => void;
+  setHumanHandoff: (handoff: boolean) => void;
+  escalateToHuman: (conversationId: string) => void;
+
+  // Receipt Actions
+  generateReceipt: (transactionId: string) => ReceiptData | null;
 }
 
 const defaultConfig: AppConfig = {
@@ -160,6 +187,13 @@ export const useStore = create<AppState>((set, get) => ({
   selectedUserId: null,
   darkMode: false,
   isLoading: false,
+
+  // Support state
+  supportTickets: [],
+  aiConversations: [],
+  currentAIConversation: null,
+  isAIThinking: false,
+  isHumanHandoff: false,
 
   // Auth actions
   setUser: (user) => set({ user }),
@@ -565,4 +599,117 @@ export const useStore = create<AppState>((set, get) => ({
 
   addBillPayment: (payment) =>
     set((state) => ({ billPayments: [...state.billPayments, payment] })),
+
+  // Support Ticket Actions
+  setSupportTickets: (tickets) => set({ supportTickets: tickets }),
+
+  addSupportTicket: (ticket) =>
+    set((state) => ({ supportTickets: [ticket, ...state.supportTickets] })),
+
+  updateTicketStatus: (ticketId, status) =>
+    set((state) => ({
+      supportTickets: state.supportTickets.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              status,
+              updatedAt: new Date().toISOString(),
+              resolvedAt: status === 'resolved' ? new Date().toISOString() : t.resolvedAt,
+            }
+          : t
+      ),
+    })),
+
+  addTicketMessage: (ticketId, message) =>
+    set((state) => ({
+      supportTickets: state.supportTickets.map((t) =>
+        t.id === ticketId
+          ? { ...t, messages: [...t.messages, message], updatedAt: new Date().toISOString() }
+          : t
+      ),
+    })),
+
+  assignTicket: (ticketId, agentId) =>
+    set((state) => ({
+      supportTickets: state.supportTickets.map((t) =>
+        t.id === ticketId ? { ...t, assignedTo: agentId, status: 'in_progress' as const } : t
+      ),
+    })),
+
+  // AI Conversation Actions
+  setAIConversations: (conversations) => set({ aiConversations: conversations }),
+
+  startAIConversation: (userId) => {
+    const conversationId = `ai_conv_${Date.now()}`;
+    const newConversation: AIConversation = {
+      id: conversationId,
+      userId,
+      messages: [
+        {
+          id: `ai_msg_${Date.now()}`,
+          role: 'assistant',
+          content: 'Hello! I am your OrbitPay Credit Union AI assistant. How can I help you today?',
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      escalated: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    set((state) => ({
+      aiConversations: [newConversation, ...state.aiConversations],
+      currentAIConversation: conversationId,
+      isHumanHandoff: false,
+    }));
+    return conversationId;
+  },
+
+  addAIMessage: (conversationId, message) =>
+    set((state) => ({
+      aiConversations: state.aiConversations.map((c) =>
+        c.id === conversationId
+          ? { ...c, messages: [...c.messages, message], updatedAt: new Date().toISOString() }
+          : c
+      ),
+    })),
+
+  setCurrentAIConversation: (conversationId) => set({ currentAIConversation: conversationId }),
+
+  setAIThinking: (thinking) => set({ isAIThinking: thinking }),
+
+  setHumanHandoff: (handoff) => set({ isHumanHandoff: handoff }),
+
+  escalateToHuman: (conversationId) =>
+    set((state) => ({
+      aiConversations: state.aiConversations.map((c) =>
+        c.id === conversationId ? { ...c, escalated: true, updatedAt: new Date().toISOString() } : c
+      ),
+      isHumanHandoff: true,
+    })),
+
+  // Receipt Actions
+  generateReceipt: (transactionId) => {
+    const state = get();
+    const transaction = state.transactions.find((t) => t.id === transactionId);
+    const user = state.user;
+    if (!transaction || !user) return null;
+
+    const receipt: ReceiptData = {
+      transactionId: transaction.id,
+      timestamp: transaction.createdAt,
+      senderName: transaction.amount < 0 ? user.fullName : transaction.recipientName || 'External',
+      senderAccount: transaction.amount < 0 ? `****${user.phone.slice(-4)}` : 'N/A',
+      recipientName: transaction.amount < 0 ? transaction.recipientName || 'Recipient' : user.fullName,
+      recipientAccount: transaction.amount < 0 ? '****' : `****${user.phone.slice(-4)}`,
+      amount: Math.abs(transaction.amount),
+      currency: transaction.currency,
+      fee: 0.5,
+      total: Math.abs(transaction.amount) + 0.5,
+      status: transaction.status,
+      description: transaction.description,
+      reference: `REF-${transaction.id.toUpperCase().replace('TXN_', '')}`,
+      verificationCode: `VC${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+    };
+    return receipt;
+  },
 }));

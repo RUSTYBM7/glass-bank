@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GlassSurface, GlassCard, GlassBadge, GlassButton, GlassInput } from '@/components/glass';
+import { GlassButton, GlassInput } from '@/components/glass';
 import { useStore } from '@/store';
 import {
   Smartphone, MessageSquare, User, CreditCard, MapPin, Check,
@@ -66,7 +66,7 @@ export default function OnboardingFlow() {
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#A8E6CF] to-[#88D4AB] mx-auto mb-6 flex items-center justify-center">
               <Shield className="w-12 h-12 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-[#0A0A0A] mb-2">Welcome to Glass Bank</h2>
+            <h2 className="text-2xl font-bold text-[#0A0A0A] mb-2">Welcome to OrbitPay Credit Union</h2>
             <p className="text-[#0A0A0A]/60 mb-8">
               Join thousands of users who trust us with their financial journey. Get started in just a few minutes.
             </p>
@@ -539,7 +539,7 @@ export default function OnboardingFlow() {
             <>
               {currentStep !== 'otp' && (
                 <GlassButton
-                  variant="outline"
+                  variant="ghost"
                   className="flex-1"
                   onClick={() => prevOnboardingStep()}
                 >

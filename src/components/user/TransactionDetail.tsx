@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard, GlassButton, GlassBadge } from '@/components/glass';
 import { useStore } from '@/store';
 import { ArrowLeft, Share2, Receipt, Check, Clock, X } from 'lucide-react';
+import TransactionReceipt from './TransactionReceipt';
 
 export default function TransactionDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { transactions } = useStore();
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const transaction = transactions.find((t) => t.id === id);
 
@@ -111,15 +114,40 @@ export default function TransactionDetail() {
 
       {/* Actions */}
       <div className="flex gap-3">
-        <GlassButton variant="default" fullWidth className="flex items-center justify-center gap-2 py-4 rounded-2xl">
+        <GlassButton
+          variant="default"
+          fullWidth
+          onClick={() => setShowReceipt(true)}
+          className="flex items-center justify-center gap-2 py-4 rounded-2xl"
+        >
           <Receipt className="w-5 h-5" />
           <span className="text-sm">Receipt</span>
         </GlassButton>
-        <GlassButton variant="default" fullWidth className="flex items-center justify-center gap-2 py-4 rounded-2xl">
+        <GlassButton
+          variant="default"
+          fullWidth
+          onClick={async () => {
+            if (!transaction) return;
+            const shareText = `Transaction - OrbitPay Credit Union\n\n${transaction.description}\nAmount: ${transaction.amount.toLocaleString('en-US', { style: 'currency', currency: transaction.currency })}\nStatus: ${transaction.status}\nDate: ${new Date(transaction.createdAt).toLocaleDateString()}`;
+            if (navigator.share) {
+              try { await navigator.share({ title: 'Transaction', text: shareText }); } catch { /* cancelled */ }
+            } else {
+              await navigator.clipboard.writeText(shareText);
+            }
+          }}
+          className="flex items-center justify-center gap-2 py-4 rounded-2xl"
+        >
           <Share2 className="w-5 h-5" />
           <span className="text-sm">Share</span>
         </GlassButton>
       </div>
+
+      {/* Receipt Modal */}
+      <AnimatePresence>
+        {showReceipt && id && (
+          <TransactionReceipt transactionId={id} onClose={() => setShowReceipt(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

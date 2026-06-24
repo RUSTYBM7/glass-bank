@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { GlassCard, GlassButton, GlassBadge } from '@/components/glass';
 import { useStore } from '@/store';
-import { TrendingUp, DollarSign, Calendar } from 'lucide-react';
+import { TrendingUp, DollarSign, Calendar, Headphones } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 const chartData = {
@@ -34,6 +36,7 @@ type TimeRange = '1W' | '1M' | '6M' | '1Y' | 'ALL';
 
 export default function InvestmentScreen() {
   const { user } = useStore();
+  const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState<TimeRange>('1W');
   const [oneTimeAmount, setOneTimeAmount] = useState(1000);
   const [monthlyAmount, setMonthlyAmount] = useState(200);
@@ -50,9 +53,19 @@ export default function InvestmentScreen() {
   return (
     <div className="p-5 space-y-5 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-medium text-[#0A0A0A]">Investments</h1>
-        <p className="text-sm text-[#0A0A0A]/50">Grow your wealth smartly</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-medium text-[#0A0A0A]">Investments</h1>
+          <p className="text-sm text-[#0A0A0A]/50">Grow your wealth smartly</p>
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => navigate('/app/chat')}
+          className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+          aria-label="Support"
+        >
+          <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+        </motion.button>
       </div>
 
       {/* Earnings Card */}

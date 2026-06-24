@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GlassSurface, GlassCard, GlassBadge, GlassButton } from '@/components/glass';
+import { GlassCard, GlassButton } from '@/components/glass';
 import { useStore } from '@/store';
 import {
-  CreditCard, Plus, Snowflake, Ban, Eye, EyeOff,
-  Shield, Sparkles, Check, X, Copy, Smartphone
+  CreditCard, Plus, Snowflake, Eye, EyeOff,
+  Shield, Sparkles, Headphones, Smartphone
 } from 'lucide-react';
 
 export default function CardsScreen() {
   const navigate = useNavigate();
-  const { cards, user, freezeCard, unfreezeCard, blockCard } = useStore();
+  const { cards, user, freezeCard, unfreezeCard } = useStore();
   const [showCVV, setShowCVV] = useState<string | null>(null);
   const [showCardNumber, setShowCardNumber] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'debit' | 'credit'>('all');
@@ -40,27 +40,29 @@ export default function CardsScreen() {
     }
   };
 
-  const formatCardNumber = (lastFour: string) => {
-    return `•••• •••• •••• ${lastFour}`;
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-
   return (
     <div className="p-5 space-y-5 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0A0A0A]">My Cards</h1>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => {}}
-          className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
-        >
-          <Plus className="w-4 h-4" />
-          Add Card
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/app/chat')}
+            className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+            aria-label="Support"
+          >
+            <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {}}
+            className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
+          >
+            <Plus className="w-4 h-4" />
+            Add Card
+          </motion.button>
+        </div>
       </div>
 
       {/* Tab Filter */}
@@ -127,7 +129,16 @@ export default function CardsScreen() {
                   </div>
 
                   <div>
-                    <p className="text-white/60 text-xs mb-1">Card Number</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-white/60 text-xs">Card Number</p>
+                      <button
+                        onClick={() => setShowCardNumber(showCardNumber === card.id ? null : card.id)}
+                        className="text-white/40 hover:text-white/80 transition-colors"
+                        aria-label="Toggle card number"
+                      >
+                        {showCardNumber === card.id ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      </button>
+                    </div>
                     <p className="text-white text-lg font-mono tracking-wider">
                       {showCardNumber === card.id ? `•••• •••• •••• ${card.lastFourDigits}` : '•••• •••• •••• ••••'}
                     </p>

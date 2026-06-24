@@ -291,3 +291,71 @@ export interface BillPayment {
   paidAt?: string;
   createdAt: string;
 }
+
+export type TicketStatus = 'open' | 'in_progress' | 'waiting' | 'resolved' | 'closed';
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TicketCategory = 'account' | 'transfer' | 'card' | 'crypto' | 'investment' | 'loan' | 'technical' | 'other';
+
+export interface SupportTicket {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  subject: string;
+  description: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  status: TicketStatus;
+  assignedTo?: string;
+  messages: TicketMessage[];
+  attachments: string[];
+  createdAt: string;
+  updatedAt: string;
+  resolvedAt?: string;
+}
+
+export interface TicketMessage {
+  id: string;
+  ticketId: string;
+  senderId: string;
+  senderName: string;
+  senderType: 'user' | 'agent' | 'system';
+  content: string;
+  createdAt: string;
+  isInternal?: boolean;
+}
+
+export interface AIConversation {
+  id: string;
+  userId: string;
+  messages: AIMessage[];
+  escalated: boolean;
+  escalatedTo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AIMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+  confidence?: number;
+}
+
+export interface ReceiptData {
+  transactionId: string;
+  timestamp: string;
+  senderName: string;
+  senderAccount: string;
+  recipientName: string;
+  recipientAccount: string;
+  amount: number;
+  currency: Currency;
+  fee: number;
+  total: number;
+  status: TransactionStatus;
+  description: string;
+  reference: string;
+  verificationCode: string;
+}

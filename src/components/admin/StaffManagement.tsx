@@ -132,7 +132,7 @@ export default function StaffManagement() {
                 </div>
                 <div>
                   <label className="text-xs text-[#0A0A0A]/50 mb-1 block">Email</label>
-                  <input type="email" className="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="admin@glassbank.com" />
+                  <input type="email" className="w-full glass-input px-4 py-2.5 rounded-xl text-sm" placeholder="admin@orbitpay.com" />
                 </div>
                 <div>
                   <label className="text-xs text-[#0A0A0A]/50 mb-1 block">Role</label>

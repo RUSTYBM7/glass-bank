@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GlassSurface, GlassCard, GlassBadge, GlassButton, GlassInput } from '@/components/glass';
+import { GlassCard, GlassBadge, GlassButton, GlassInput } from '@/components/glass';
 import { useStore } from '@/store';
 import {
-  Clock, Plus, Calendar, Repeat, Check, X, ChevronRight,
-  ArrowRight, Pause, Play, Trash2
+  Clock, Plus, Calendar, Repeat,
+  ArrowRight, Pause, Play, Trash2, Headphones
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function ScheduledScreen() {
   const { scheduledTransfers, user, updateScheduledTransfer, deleteScheduledTransfer } = useStore();
+  const navigate = useNavigate();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const userTransfers = scheduledTransfers.filter((t) => t.userId === user?.id);
@@ -48,14 +50,24 @@ export default function ScheduledScreen() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0A0A0A]">Scheduled</h1>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
-        >
-          <Plus className="w-4 h-4" />
-          New Schedule
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/app/chat')}
+            className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+            aria-label="Support"
+          >
+            <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
+          >
+            <Plus className="w-4 h-4" />
+            New Schedule
+          </motion.button>
+        </div>
       </div>
 
       {/* Info Card */}
@@ -259,7 +271,7 @@ export default function ScheduledScreen() {
 
               <div className="mt-6 flex gap-3">
                 <GlassButton
-                  variant="outline"
+                  variant="ghost"
                   className="flex-1"
                   onClick={() => setShowCreateModal(false)}
                 >

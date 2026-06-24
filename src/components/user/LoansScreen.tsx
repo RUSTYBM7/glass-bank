@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GlassSurface, GlassCard, GlassBadge, GlassButton, GlassInput } from '@/components/glass';
+import { GlassCard, GlassBadge, GlassButton, GlassInput } from '@/components/glass';
 import { useStore } from '@/store';
 import {
-  Wallet, Plus, TrendingUp, Calendar, AlertCircle,
-  Check, X, ChevronRight, Percent, Clock, DollarSign,
-  Home, Car, GraduationCap, Briefcase, User
+  Wallet, Plus, Calendar,
+  Home, Car, GraduationCap, Briefcase, User, Headphones
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoansScreen() {
-  const { loans, user, loanPayments } = useStore();
+  const { loans, user } = useStore();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'active' | 'pending' | 'history'>('active');
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [selectedLoanType, setSelectedLoanType] = useState<string | null>(null);
@@ -65,14 +66,24 @@ export default function LoansScreen() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#0A0A0A]">My Loans</h1>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowApplyModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
-        >
-          <Plus className="w-4 h-4" />
-          Apply
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/app/chat')}
+            className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+            aria-label="Support"
+          >
+            <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowApplyModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#0A0A0A] text-white rounded-full text-sm font-medium"
+          >
+            <Plus className="w-4 h-4" />
+            Apply
+          </motion.button>
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -273,22 +284,20 @@ export default function LoansScreen() {
 
               <div className="mt-6 space-y-4">
                 <GlassInput
-                  label="Loan Amount"
+                  label="Loan Amount ($)"
                   type="number"
                   placeholder="Enter amount"
-                  prefix="$"
                 />
                 <GlassInput
-                  label="Loan Term"
+                  label="Loan Term (months)"
                   type="number"
                   placeholder="Enter months"
-                  suffix="months"
                 />
               </div>
 
               <div className="mt-6 flex gap-3">
                 <GlassButton
-                  variant="outline"
+                  variant="ghost"
                   className="flex-1"
                   onClick={() => setShowApplyModal(false)}
                 >

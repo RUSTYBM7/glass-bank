@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { GlassCard, GlassButton, GlassBadge } from '@/components/glass';
 import { useStore } from '@/store';
-import { Bitcoin, ArrowUpRight, ArrowDownRight, TrendingUp, CreditCard } from 'lucide-react';
+import { Bitcoin, ArrowUpRight, ArrowDownRight, TrendingUp, CreditCard, Headphones } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 
 const btcChartData = [
@@ -19,6 +21,7 @@ const cryptoTransactions = [
 
 export default function CryptoScreen() {
   const { user } = useStore();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'portfolio' | 'prices'>('portfolio');
 
   if (!user) return null;
@@ -34,7 +37,16 @@ export default function CryptoScreen() {
           <h1 className="text-2xl font-medium text-[#0A0A0A]">Crypto</h1>
           <p className="text-sm text-[#0A0A0A]/50">Manage your digital assets</p>
         </div>
-        <div className="flex gap-1 glass-pill p-1">
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/app/chat')}
+            className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+            aria-label="Support"
+          >
+            <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+          </motion.button>
+          <div className="flex gap-1 glass-pill p-1">
           <button
             onClick={() => setActiveTab('portfolio')}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
@@ -51,6 +63,7 @@ export default function CryptoScreen() {
           >
             Prices
           </button>
+          </div>
         </div>
       </div>
 

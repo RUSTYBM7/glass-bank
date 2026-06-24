@@ -4,7 +4,7 @@ import { GlassSurface, GlassBadge, GlassCard } from '@/components/glass';
 import { useStore } from '@/store';
 import {
   Bell, Eye, EyeOff, Send, Download, Plus, ArrowRight,
-  ChevronRight, TrendingUp
+  ChevronRight, TrendingUp, Headphones
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -50,18 +50,29 @@ export default function HomeScreen() {
             <p className="text-sm font-medium text-[#0A0A0A]">{user.fullName.split(' ')[0]}</p>
           </div>
         </GlassSurface>
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => {}}
-          className="relative w-11 h-11 glass-button rounded-full flex items-center justify-center"
-        >
-          <Bell className="w-5 h-5 text-[#0A0A0A]" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF6B6B] rounded-full text-white text-[10px] font-bold flex items-center justify-center">
-              {unreadCount}
-            </span>
-          )}
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate('/app/chat')}
+            className="w-10 h-10 glass-button rounded-full flex items-center justify-center"
+            aria-label="Support"
+          >
+            <Headphones className="w-4 h-4 text-[#0A0A0A]" />
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => {}}
+            className="relative w-11 h-11 glass-button rounded-full flex items-center justify-center"
+            aria-label="Notifications"
+          >
+            <Bell className="w-5 h-5 text-[#0A0A0A]" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#FF6B6B] rounded-full text-white text-[10px] font-bold flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </motion.button>
+        </div>
       </div>
 
       {/* Balance Card */}
